@@ -1,0 +1,76 @@
+{
+    "version": "1.0.0",
+    "artifacts": [
+        {
+            "id": "cqrs-test",
+            "from": "artifacts/tests/Unit/CqrsContractTest.php",
+            "to": "tests/Unit/CqrsContractTest.php",
+            "mode": "copy"
+        },
+        {
+            "id": "cqrs-baseline",
+            "from": "artifacts/tests/cqrs-baseline.php.stub",
+            "to": "tests/cqrs-baseline.php",
+            "mode": "stub"
+        },
+        {
+            "id": "contracts",
+            "from": "artifacts/app/Common/Contracts",
+            "to": "app/Common/Contracts",
+            "mode": "copy"
+        },
+        {
+            "id": "exceptions",
+            "from": "artifacts/app/Exceptions",
+            "to": "app/Exceptions",
+            "mode": "copy"
+        },
+        {
+            "id": "rule-cqrs",
+            "from": "rules/cqrs-conventions.md",
+            "to": ".agents/rules/cqrs-conventions.md",
+            "mode": "copy"
+        },
+        {
+            "id": "rules-shared",
+            "from": "rules/shared",
+            "to": ".agents/rules/shared",
+            "mode": "copy"
+        },
+        {
+            "id": "skills",
+            "from": "skills",
+            "to": ".agents/skills",
+            "mode": "copy"
+        },
+        {
+            "id": "make",
+            "from": "make/conventions.mk",
+            "to": ".conventions/Makefile",
+            "mode": "copy"
+        },
+        {
+            "id": "compose-base",
+            "from": "docker/base.yml",
+            "to": "compose.conventions.yml",
+            "mode": "copy"
+        },
+        {
+            "id": "phpstan-base",
+            "from": "phpstan.base.neon",
+            "to": "phpstan.base.neon",
+            "mode": "copy"
+        },
+        {
+            "id": "agents-block",
+            "from": "snippets/agents-block.md",
+            "to": "AGENTS.md",
+            "mode": "managed-block"
+        },
+        {
+            "id": "pint",
+            "from": "pint.json",
+            "mode": "reference"
+        }
+    ]
+}

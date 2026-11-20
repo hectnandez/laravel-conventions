@@ -1,0 +1,119 @@
+# Base compartida de Docker Compose.
+#
+# Se copia al proyecto como `compose.conventions.yml` y se incluye así:
+#
+#   include:
+#       - compose.conventions.yml
+#
+# Cada proyecto define en su .env:
+#   PROJECT_SLUG=gmax-care
+#   APP_PORT=8000
+#   DB_FORWARD_PORT=3306
+#
+# Si el proyecto usa una red externa, añade el `networks` de **todos** los servicios
+# en su docker-compose.yml (app, nginx, supervisor, db y redis); si solo lo pones en
+# `app`, no podrá resolver `db` ni `redis`. Ejemplo:
+#
+#   x-networks: &networks
+#       networks:
+#           - proxy_mi-proyecto
+#
+#   services:
+#       app: *networks
+#       nginx: *networks
+#       supervisor: *networks
+#       db: *networks
+#       redis: *networks
+#
+# Servicios específicos (minio, rabbitmq, etc.) y el script de init de la base de
+# datos se quedan en el compose del proyecto.
+
+services:
+    app:
+        container_name: ${PROJECT_SLUG:-app}-app
+        build:
+            context: ./
+            dockerfile: ./docker-compose/Dockerfile
+            target: app
+        restart: unless-stopped
+        working_dir: /var/www/
+        environment:
+            COMPOSER_IPRESOLVE: "4"
+            COMPOSER_MAX_PARALLEL_HTTP: "4"
+        volumes:
+            - ./:/var/www
+        depends_on:
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+
+    nginx:
+        container_name: ${PROJECT_SLUG:-app}-www
+        image: nginx:alpine
+        restart: unless-stopped
+        ports:
+            - "${APP_PORT:-8000}:80"
+        volumes:
+            - ./:/var/www
+            - ./docker-compose/nginx:/etc/nginx/conf.d/
+        depends_on:
+            app:
+                condition: service_started
+
+    supervisor:
+        container_name: ${PROJECT_SLUG:-app}-supervisor
+        build:
+            context: ./
+            dockerfile: ./docker-compose/Dockerfile
+            target: supervisor
+        restart: unless-stopped
+        working_dir: /var/www/
+        command: ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf"]
+        volumes:
+            - ./:/var/www
+            - ./docker-compose/supervisor/default.conf:/etc/supervisor/conf.d/default.conf
+        depends_on:
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+
+    db:
+        container_name: ${PROJECT_SLUG:-app}-db
+        image: ${DB_IMAGE:-mysql:8.4}
+        restart: unless-stopped
+        ports:
+            - "${DB_FORWARD_PORT:-3306}:3306"
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_USER: ${DB_USERNAME}
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        volumes:
+            - mysql_data:/var/lib/mysql
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    redis:
+        container_name: ${PROJECT_SLUG:-app}-redis
+        image: ${REDIS_IMAGE:-valkey/valkey:9-alpine}
+        restart: unless-stopped
+        volumes:
+            - redis_data:/data
+        healthcheck:
+            test: ["CMD-SHELL", "valkey-cli ping | grep -q PONG"]
+            interval: 30s
+            timeout: 5s
+            retries: 3
+
+volumes:
+    mysql_data:
+        driver: local
+    redis_data:
+        driver: local

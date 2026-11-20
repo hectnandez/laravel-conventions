@@ -1,0 +1,15 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+$packageRoot = dirname(__DIR__);
+$autoload = $packageRoot.'/vendor/autoload.php';
+
+if (is_file($autoload)) {
+    require $autoload;
+} else {
+    require $packageRoot.'/src/autoload.php';
+}
+
+exit((new Hectnandez\Conventions\Cli($packageRoot))->run($argv));

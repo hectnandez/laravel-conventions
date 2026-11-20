@@ -1,0 +1,30 @@
+{
+    "name": "hectnandez/laravel-conventions",
+    "description": "Reglas y artefactos canónicos compartidos para proyectos Laravel: CQRS, entorno, CI y despliegue.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "laravel",
+        "conventions",
+        "cqrs",
+        "standards",
+        "ai"
+    ],
+    "require": {
+        "php": ">=8.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Hectnandez\\Conventions\\": "src/"
+        }
+    },
+    "bin": [
+        "bin/conventions"
+    ],
+    "scripts": {
+        "test": "php tests/run.php"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

@@ -1,0 +1,14 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Excepciones heredadas del contrato CQRS, por regla y archivo relativo.
+ *
+ * Formato: ['REGLA' => ['ruta/relativa.php', ...]].
+ * Solo puede encoger: cada entrada debe tener ticket y fecha de retiro.
+ * El test canónico tolera que este archivo no exista.
+ *
+ * @return array<string, list<string>>
+ */
+return [];

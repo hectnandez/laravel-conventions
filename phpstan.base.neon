@@ -1,0 +1,6 @@
+parameters:
+    treatPhpDocTypesAsCertain: false
+    parseModelCastsMethod: true
+    excludePaths:
+        - %currentWorkingDirectory%/bootstrap/cache
+        - %currentWorkingDirectory%/storage/framework/views
